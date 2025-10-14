@@ -128,8 +128,7 @@ export default function StepperForm({ name }: StepperFormProps) {
             <h2 className="text-4xl font-bold mb-6 text-orange-400">Wo findet das Spektakel statt?</h2>
             <div className="bg-gray-800 rounded-lg p-6 mb-6 max-w-2xl">
               <p className="text-xl text-cyan-300 mb-4 font-semibold">📍 Geheimer Treffpunkt</p>
-              <p className="text-lg text-gray-300 mb-2">Stephansplatz 1</p>
-              <p className="text-lg text-gray-300 mb-4">1010 Wien, Austria</p>
+              <p className="text-lg text-gray-300 mb-2">{process.env.NEXT_PUBLIC_PARTY_ADDRESS || 'Adresse wird noch bekannt gegeben'}</p>
               
               {/* Google Maps Embed */}
               <div className="relative w-full h-64 mb-4 rounded-lg overflow-hidden shadow-lg">
@@ -138,14 +137,14 @@ export default function StepperForm({ name }: StepperFormProps) {
                   height="100%"
                   frameBorder="0"
                   style={{ border: 0 }}
-                  src={`https://www.google.com/maps/embed/v1/place?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || 'demo'}&q=Stephansplatz+1,+Wien,+Austria&zoom=15`}
+                  src={`https://www.google.com/maps/embed/v1/place?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || 'demo'}&q=${encodeURIComponent(process.env.NEXT_PUBLIC_PARTY_ADDRESS || 'Stephansplatz 1, Wien, Austria')}&zoom=15`}
                   allowFullScreen
                 />
               </div>
               
               {/* Route Button */}
               <a
-                href="https://www.google.com/maps/dir/?api=1&destination=Stephansplatz+1,+Wien,+Austria"
+                href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(process.env.NEXT_PUBLIC_PARTY_ADDRESS || 'Stephansplatz 1, Wien, Austria')}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-block bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg shadow-md transform hover:scale-105 transition-transform duration-300 mb-4 w-full text-center"
@@ -178,7 +177,7 @@ export default function StepperForm({ name }: StepperFormProps) {
               />
             </div>
             
-            <a href="https://chat.whatsapp.com/DeaDBeefCafe" target="_blank" rel="noopener noreferrer" className="bg-green-500 hover:bg-green-600 text-white font-bold py-4 px-8 rounded-full animate-pulse shadow-xl transform hover:scale-110 transition-transform duration-300">
+            <a href={process.env.NEXT_PUBLIC_WHATSAPP_GROUP_LINK} target="_blank" rel="noopener noreferrer" className="bg-green-500 hover:bg-green-600 text-white font-bold py-4 px-8 rounded-full animate-pulse shadow-xl transform hover:scale-110 transition-transform duration-300">
               Tritt der WhatsApp-Gruppe bei
             </a>
           </StepWrapper>
