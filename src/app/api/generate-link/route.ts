@@ -20,9 +20,9 @@ export async function GET(request: NextRequest) {
   const token = generateToken(name.toLowerCase(), secret);
   const url = `/einladung/${slugName}-${token}`;
 
-  // Log to the server console
+  // Only log to the server console, no response to the client
   console.log(`Generated link for ${name}: ${url}`);
-
-  // Return the link in the response
-  return NextResponse.json({ name, url });
+  
+  // Return nothing useful to the client
+  return NextResponse.json({ message: 'Check server console' }, { status: 200 });
 }

@@ -301,7 +301,19 @@ export default function StepperForm({ name }: StepperFormProps) {
         {step === 6 && (
           <StepWrapper key={6}>
             <h2 className="text-4xl font-bold mb-4 text-red-500">MISSION GESCHEITERT</h2>
-            <p className="text-xl mb-8 text-gray-400">Schade. Wirklich schade.</p>
+            <p className="text-xl mb-6 text-gray-400">Schade. Wirklich schade.</p>
+            
+            {/* Sad farewell image */}
+            <div className="mb-6">
+              <Image 
+                src={`/images/${currentImage}.jpg`}
+                alt="Sad times"
+                width={300}
+                height={300}
+                className="rounded-full shadow-2xl border-8 border-red-600 mx-auto grayscale opacity-50"
+              />
+            </div>
+            
             <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExaDBscjBjdjVqa2Z1d3J0YzEwZzM2b3JzZ3NqYmJjZ3B6eGNrN2ZqdyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/3oFzm622W766v4jQyY/giphy.gif" alt="Sad" className="mb-8 rounded-lg shadow-lg" />
             <button 
               onClick={() => { setNoCount(0); handleSetStep(1); }} 
