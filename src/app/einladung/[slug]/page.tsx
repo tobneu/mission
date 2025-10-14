@@ -8,8 +8,8 @@ type EinladungPageProps = {
   };
 };
 
-export default function EinladungPage({ params }: EinladungPageProps) {
-  const { slug } = params;
+export default async function EinladungPage({ params }: EinladungPageProps) {
+  const { slug } = await params;
   const parts = slug.split('-');
   const token = parts.pop();
   const name = parts.join(' ');

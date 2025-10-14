@@ -4,6 +4,9 @@ export default function Home() {
   return (
     <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
       <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
+        <h1 className="text-4xl font-bold text-blue-500">Welcome to Tailwind CSS</h1>
+        <p className="text-lg text-gray-700">This is a test to verify Tailwind CSS is working.</p>
+        <button className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Click Me</button>
         <Image
           className="dark:invert"
           src="/next.svg"
