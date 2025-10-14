@@ -1,106 +1,197 @@
-import Image from "next/image";
+'use client';
+
+
+import { useEffect, useState, useRef } from 'react';
 
 export default function Home() {
-  return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <h1 className="text-4xl font-bold text-blue-500">Welcome to Tailwind CSS</h1>
-        <p className="text-lg text-gray-700">This is a test to verify Tailwind CSS is working.</p>
-        <button className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Click Me</button>
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const [gifUrls, setGifUrls] = useState<string[]>([]);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const gifImagesRef = useRef<HTMLImageElement[]>([]);
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+  useEffect(() => {
+    const fetchRandomGifs = async () => {
+      try {
+        const apiKey = 'VVaEH5k7UKzIuvngtpAqnZ8nQQW5U5hw';
+        const gifPromises = [];
+        
+        for (let i = 0; i < 5; i++) {
+          gifPromises.push(
+            fetch(`https://api.giphy.com/v1/gifs/random?api_key=${apiKey}&rating=g`)
+              .then(res => res.json())
+          );
+        }
+        
+        const results = await Promise.all(gifPromises);
+        const urls = results
+          .map(data => data.data?.images?.original?.url)
+          .filter(url => url) as string[];
+        
+        setGifUrls(urls.length > 0 ? urls : ['https://media.giphy.com/media/3o7aD2saalBwwftBIY/giphy.gif']);
+      } catch (error) {
+        console.error('Error fetching GIFs:', error);
+        setGifUrls(['https://media.giphy.com/media/3o7aD2saalBwwftBIY/giphy.gif']);
+      }
+    };
+
+    fetchRandomGifs();
+  }, []);
+
+  useEffect(() => {
+    if (gifUrls.length === 0) return;
+
+    gifUrls.forEach((url, index) => {
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.src = url;
+      img.onload = () => {
+        gifImagesRef.current[index] = img;
+      };
+    });
+  }, [gifUrls]);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const confetti: Array<{
+      x: number;
+      y: number;
+      vx: number;
+      vy: number;
+      size: number;
+      color: string;
+      rotation: number;
+      rotationSpeed: number;
+      gravity: number;
+    }> = [];
+
+    for (let i = 0; i < 150; i++) {
+      confetti.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height - canvas.height,
+        vx: (Math.random() - 0.5) * 3,
+        vy: Math.random() * 2 + 1,
+        size: Math.random() * 10 + 5,
+        color: `hsl(${Math.random() * 360}, 80%, 60%)`,
+        rotation: Math.random() * Math.PI * 2,
+        rotationSpeed: (Math.random() - 0.5) * 0.15,
+        gravity: 0.1,
+      });
+    }
+
+    const bouncingGifs: Array<{
+      x: number;
+      y: number;
+      vx: number;
+      vy: number;
+      width: number;
+      height: number;
+      rotation: number;
+      rotationSpeed: number;
+      imageIndex: number;
+    }> = [];
+
+    for (let i = 0; i < Math.min(5, gifUrls.length); i++) {
+      const width = 150 + Math.random() * 100;
+      bouncingGifs.push({
+        x: Math.random() * (canvas.width - width),
+        y: Math.random() * (canvas.height - width),
+        vx: (Math.random() - 0.5) * 4,
+        vy: (Math.random() - 0.5) * 4,
+        width: width,
+        height: width,
+        rotation: 0,
+        rotationSpeed: (Math.random() - 0.5) * 0.05,
+        imageIndex: i,
+      });
+    }
+
+    let animationId: number;
+
+    const animate = () => {
+      ctx.fillStyle = 'rgba(10, 10, 20, 0.95)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      confetti.forEach((c) => {
+        c.vy += c.gravity;
+        c.x += c.vx;
+        c.y += c.vy;
+        c.rotation += c.rotationSpeed;
+
+        if (c.y > canvas.height + 50) {
+          c.y = -50;
+          c.x = Math.random() * canvas.width;
+          c.vy = Math.random() * 2 + 1;
+        }
+        if (c.x < -50 || c.x > canvas.width + 50) {
+          c.vx *= -1;
+        }
+
+        ctx.save();
+        ctx.translate(c.x, c.y);
+        ctx.rotate(c.rotation);
+        ctx.fillStyle = c.color;
+        ctx.globalAlpha = 0.8;
+        ctx.fillRect(-c.size / 2, -c.size / 2, c.size, c.size / 3);
+        ctx.restore();
+      });
+
+      bouncingGifs.forEach((gif) => {
+        const img = gifImagesRef.current[gif.imageIndex];
+        
+        gif.x += gif.vx;
+        gif.y += gif.vy;
+        gif.rotation += gif.rotationSpeed;
+
+        if (gif.x <= 0 || gif.x + gif.width >= canvas.width) {
+          gif.vx *= -0.95;
+        }
+        if (gif.y <= 0 || gif.y + gif.height >= canvas.height) {
+          gif.vy *= -0.95;
+        }
+
+        gif.x = Math.max(0, Math.min(canvas.width - gif.width, gif.x));
+        gif.y = Math.max(0, Math.min(canvas.height - gif.height, gif.y));
+
+        if (img && img.complete) {
+          ctx.save();
+          ctx.translate(gif.x + gif.width / 2, gif.y + gif.height / 2);
+          ctx.rotate(gif.rotation);
+          ctx.globalAlpha = 0.9;
+          ctx.shadowBlur = 20;
+          ctx.shadowColor = 'rgba(255, 255, 255, 0.3)';
+          ctx.drawImage(img, -gif.width / 2, -gif.height / 2, gif.width, gif.height);
+          ctx.restore();
+        }
+      });
+
+      animationId = requestAnimationFrame(animate);
+    };
+
+    animate();
+
+    const handleResize = () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    };
+
+    window.addEventListener('resize', handleResize);
+
+    return () => {
+      cancelAnimationFrame(animationId);
+      window.removeEventListener('resize', handleResize);
+    };
+  }, [gifUrls]);
+
+  return (
+    <div className="relative min-h-screen overflow-hidden bg-black">
+      <canvas ref={canvasRef} className="absolute inset-0 w-full h-full" />
     </div>
   );
 }
