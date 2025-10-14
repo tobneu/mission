@@ -41,7 +41,6 @@ export default function StepperForm({ name }: StepperFormProps) {
     return randomNum;
   };
 
-  const handleNext = () => setStep(step + 1);
   const handleSetStep = (newStep: number) => {
     getRandomImage();
     setStep(newStep);
@@ -224,7 +223,7 @@ export default function StepperForm({ name }: StepperFormProps) {
           <StepWrapper key={11}>
             <h2 className="text-6xl font-bold mb-4 text-red-500">ERNSTHAFT?!</h2>
             <p className="text-2xl mb-2 text-gray-300">Du willst meinen Geburtstag verpassen?</p>
-            <p className="text-xl mb-6 text-gray-400">Das gibt's nur einmal... 🎂</p>
+            <p className="text-xl mb-6 text-gray-400">Das gibt&apos;s nur einmal... 🎂</p>
             
             {/* Random funny image with sad/pleading look */}
             <div className="mb-6">

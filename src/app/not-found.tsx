@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState, useRef } from 'react';
+import Link from 'next/link';
 
 export default function NotFound() {
   const [gifUrls, setGifUrls] = useState<string[]>([]);
@@ -257,12 +258,12 @@ export default function NotFound() {
         <p className="text-3xl text-white font-bold mb-8 animate-bounce">
           Diese Seite existiert nicht... oder doch? 🤔
         </p>
-        <a 
+        <Link 
           href="/"
           className="pointer-events-auto bg-gradient-to-r from-cyan-500 to-purple-500 hover:from-cyan-600 hover:to-purple-600 text-white font-bold py-4 px-8 rounded-full shadow-2xl transform hover:scale-110 transition-transform duration-300 text-xl animate-pulse"
         >
           Zurück zur Realität
-        </a>
+        </Link>
       </div>
     </div>
   );

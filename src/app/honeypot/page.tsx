@@ -1,7 +1,5 @@
 'use client';
 
-import { useEffect } from 'react';
-
 export default function HoneypotPage() {
 
   // Tab-Bombe bei jedem Klick auf die unsichtbaren Buttons
