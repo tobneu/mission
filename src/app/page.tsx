@@ -12,11 +12,13 @@ export default function Home() {
     const fetchRandomGifs = async () => {
       try {
         const apiKey = 'VVaEH5k7UKzIuvngtpAqnZ8nQQW5U5hw';
+        const searches = ['fish', 'champagne', 'ocean', 'bubbles', 'celebration', 'aquarium', 'party'];
         const gifPromises = [];
         
         for (let i = 0; i < 5; i++) {
+          const randomSearch = searches[Math.floor(Math.random() * searches.length)];
           gifPromises.push(
-            fetch(`https://api.giphy.com/v1/gifs/random?api_key=${apiKey}&rating=g`)
+            fetch(`https://api.giphy.com/v1/gifs/random?api_key=${apiKey}&tag=${randomSearch}&rating=g`)
               .then(res => res.json())
           );
         }
