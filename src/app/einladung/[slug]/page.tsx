@@ -3,13 +3,14 @@ import { generateToken } from '@/lib/tokenUtils';
 import StepperForm from '@/components/StepperForm';
 
 type EinladungPageProps = {
-  params: {
+  params: Promise<{
     slug: string;
-  };
+  }>;
 };
 
 export default async function EinladungPage({ params }: EinladungPageProps) {
-  const { slug } = await params;
+  const resolvedParams = await params;
+  const { slug } = resolvedParams;
   const parts = slug.split('-');
   const token = parts.pop();
   const name = parts.join(' ');
