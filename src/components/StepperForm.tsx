@@ -43,26 +43,28 @@ const StepWrapper = ({ children, backgroundImage }: { children: React.ReactNode;
         >
             {/* Background Image - optimized with Next.js Image */}
             {backgroundImage && (
-                <div className="absolute inset-0 z-0">
-                    <Image
-                        src={`/images/${backgroundImage}.jpg`}
-                        alt="Background"
-                        fill
-                        priority
-                        quality={75}
-                        sizes="100vw"
-                        className="object-cover object-[center_15%]"
-                        placeholder="blur"
-                        blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAb/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="
-                    />
+                <div className="absolute inset-0 z-0 overflow-hidden">
+                    <div className="absolute w-full h-[120%] -top-[10%]">
+                        <Image
+                            src={`/images/${backgroundImage}.jpg`}
+                            alt="Background"
+                            fill
+                            priority
+                            quality={75}
+                            sizes="100vw"
+                            className="object-cover object-[center_35%]"
+                            placeholder="blur"
+                            blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAb/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="
+                        />
+                    </div>
                 </div>
             )}
             
-            {/* Gradient Overlay - from bottom 66% dark to top transparent */}
+            {/* Gradient Overlay - stronger at bottom, more coverage */}
             <div 
                 className="absolute inset-0 z-10"
                 style={{
-                    background: 'linear-gradient(to top, rgba(10, 10, 10, 0.98) 0%, rgba(10, 10, 10, 0.95) 40%, rgba(10, 10, 10, 0.7) 66%, transparent 100%)',
+                    background: 'linear-gradient(to top, rgba(10, 10, 10, 0.99) 0%, rgba(10, 10, 10, 0.97) 30%, rgba(10, 10, 10, 0.85) 50%, rgba(10, 10, 10, 0.5) 70%, transparent 100%)',
                 }}
             />
             
@@ -72,7 +74,7 @@ const StepWrapper = ({ children, backgroundImage }: { children: React.ReactNode;
                 initial="enter"
                 animate="center"
                 transition={{ delay: 0.1, duration: 0.3 }}
-                className="relative z-20 w-full pb-12 sm:pb-16 pt-32 sm:pt-40 px-4 sm:px-6 md:px-8 flex flex-col items-center"
+                className="relative z-20 w-full pb-8 sm:pb-12 md:pb-16 pt-20 sm:pt-28 md:pt-32 px-4 sm:px-6 md:px-8 flex flex-col items-center"
             >
                 {children}
             </motion.div>
