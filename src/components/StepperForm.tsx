@@ -86,11 +86,14 @@ const StepWrapper = ({ children, backgroundImage }: { children: React.ReactNode;
 export default function StepperForm({ name }: StepperFormProps) {
   const [step, setStep] = useState(1);
   const [noCount, setNoCount] = useState(0);
-  const [currentImage, setCurrentImage] = useState(1);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const correctSoundRef = useRef<HTMLAudioElement | null>(null);
   const wrongSoundRef = useRef<HTMLAudioElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  // Calculate image based on step number
+  const imageCount = 5;
+  const currentImage = ((step - 1) % imageCount) + 1;
 
   // Initialize audio on mount
   useEffect(() => {
@@ -203,14 +206,7 @@ export default function StepperForm({ name }: StepperFormProps) {
     }
   };
 
-  const getRandomImage = () => {
-    const randomNum = Math.floor(Math.random() * 5) + 1;
-    setCurrentImage(randomNum);
-    return randomNum;
-  };
-
   const handleSetStep = (newStep: number, playSound: 'correct' | 'wrong' | 'none' = 'none') => {
-    getRandomImage();
     setStep(newStep);
     
     // Play sound effects
@@ -230,7 +226,6 @@ export default function StepperForm({ name }: StepperFormProps) {
   
   const handleNo = () => {
     playWrongSound();
-    getRandomImage();
     if (noCount < 3) {
       setNoCount(noCount + 1);
       setStep(10 + noCount);
