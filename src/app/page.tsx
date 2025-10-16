@@ -10,7 +10,7 @@ export default function Home() {
 
   useEffect(() => {
     const fetchRandomGifs = async () => {
-      try {
+      try { 
         const apiKey = 'VVaEH5k7UKzIuvngtpAqnZ8nQQW5U5hw';
         const searches = ['fish', 'champagne', 'ocean', 'bubbles', 'celebration', 'aquarium', 'party'];
         const gifPromises = [];

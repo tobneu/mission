@@ -13,8 +13,17 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'),
   title: "Mission24",
   description: "Mission24 - A mysterious journey awaits",
+  icons: {
+    icon: [
+      { url: '/favicon/favicon.ico' },
+      { url: '/favicon/icon1.png', sizes: '32x32', type: 'image/png' },
+    ],
+    apple: '/favicon/apple-icon.png',
+  },
+  manifest: '/favicon/manifest.json',
 };
 
 export default function RootLayout({

@@ -36,7 +36,7 @@ export default function StepperForm({ name }: StepperFormProps) {
   const [currentImage, setCurrentImage] = useState(1);
 
   const getRandomImage = () => {
-    const randomNum = Math.floor(Math.random() * 5) + 1;
+    const randomNum = Math.floor(Math.random() * 7) + 1;
     setCurrentImage(randomNum);
     return randomNum;
   };
@@ -66,6 +66,7 @@ export default function StepperForm({ name }: StepperFormProps) {
             <button onClick={() => handleSetStep(2)} className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-bold py-3 px-6 rounded-full shadow-lg transform hover:scale-105 transition-transform duration-300">
               Starte den vibe check
             </button>
+            <p className="text-lg text-gray-400 mt-4">Bist du bereit?</p>
           </StepWrapper>
         )}
         {step === 2 && (
@@ -120,7 +121,9 @@ export default function StepperForm({ name }: StepperFormProps) {
               <button onClick={() => handleSetStep(4)} className="bg-gray-800 hover:bg-cyan-700 border-2 border-transparent hover:border-cyan-400 text-white font-bold py-3 px-4 rounded-lg transition-all duration-300">
                 Beides (wähl das Leben)
               </button>
+              
             </div>
+            <p className="text-lg text-gray-400 mt-4">Hauptsache du kommst!</p>
           </StepWrapper>
         )}
         {step === 4 && (
@@ -163,8 +166,8 @@ export default function StepperForm({ name }: StepperFormProps) {
         )}
         {step === 5 && (
           <StepWrapper key={5}>
-            <h2 className="text-4xl font-bold mb-4 text-green-400">MISSION ERFOLGREICH!</h2>
-            <p className="text-xl mb-6 text-gray-300">Du bist dabei. Alle weiteren Infos in der Gruppe.</p>
+            <h2 className="text-4xl font-bold mb-4 text-green-400">Mission FAST erfolgreich!</h2>
+            <p className="text-xl mb-6 text-gray-300">Du musst nur mehr der Gruppe beitreten.</p>
             
             {/* Happy celebration image */}
             <div className="mb-6">
@@ -177,8 +180,36 @@ export default function StepperForm({ name }: StepperFormProps) {
               />
             </div>
             
-            <a href={process.env.NEXT_PUBLIC_WHATSAPP_GROUP_LINK} target="_blank" rel="noopener noreferrer" className="bg-green-500 hover:bg-green-600 text-white font-bold py-4 px-8 rounded-full animate-pulse shadow-xl transform hover:scale-110 transition-transform duration-300">
-              Tritt der WhatsApp-Gruppe bei
+            <div className="bg-blue-900/30 border-2 border-blue-400 rounded-lg p-4 mb-6 max-w-md">
+              <p className="text-lg text-blue-300 font-semibold mb-1">💫 +1 willkommen!</p>
+              <p className="text-md text-gray-300">Du kannst gerne jemanden mitbringen - bitte gib vorher Bescheid! 😊</p>
+            </div>
+            
+            <a 
+              href={process.env.NEXT_PUBLIC_WHATSAPP_GROUP_LINK} 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="relative bg-gradient-to-r from-green-400 via-emerald-500 to-green-400 hover:from-green-500 hover:via-emerald-600 hover:to-green-500 text-white font-bold py-5 px-10 rounded-full shadow-2xl transform hover:scale-110 transition-all duration-300 text-xl animate-pulse"
+              style={{
+                animation: 'pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite, glow 2s ease-in-out infinite',
+                boxShadow: '0 0 20px rgba(34, 197, 94, 0.6), 0 0 40px rgba(34, 197, 94, 0.4), 0 0 60px rgba(34, 197, 94, 0.2)',
+              }}
+            >
+              <span className="relative z-10 flex items-center gap-2">
+                <span className="text-2xl">📱</span>
+                Tritt der WhatsApp-Gruppe bei
+                <span className="text-2xl">🎉</span>
+              </span>
+              <style jsx>{`
+                @keyframes glow {
+                  0%, 100% {
+                    box-shadow: 0 0 20px rgba(34, 197, 94, 0.6), 0 0 40px rgba(34, 197, 94, 0.4), 0 0 60px rgba(34, 197, 94, 0.2);
+                  }
+                  50% {
+                    box-shadow: 0 0 30px rgba(34, 197, 94, 0.8), 0 0 60px rgba(34, 197, 94, 0.6), 0 0 90px rgba(34, 197, 94, 0.4);
+                  }
+                }
+              `}</style>
             </a>
           </StepWrapper>
         )}
@@ -275,8 +306,8 @@ export default function StepperForm({ name }: StepperFormProps) {
             
             <p className="text-xl mb-8 text-gray-400">Alle werden da sein... nur du fehlst!</p>
             <div className="mb-8">
-              <p className="text-lg text-yellow-300 mb-2">❌ Keine langweilige Uni-Vorlesung</p>
-              <p className="text-lg text-yellow-300 mb-2">❌ Kein nerviger Arbeitstag</p>
+              <p className="text-lg text-yellow-300 mb-2">❌ Keine Ausreden - es ist SAMSTAG!</p>
+              <p className="text-lg text-yellow-300 mb-2">❌ Keine Arbeit, keine Uni</p>
               <p className="text-lg text-yellow-300 mb-2">✅ Pure Eskalation & Spaß!</p>
             </div>
             <div className="flex gap-6">
@@ -299,7 +330,8 @@ export default function StepperForm({ name }: StepperFormProps) {
         {step === 6 && (
           <StepWrapper key={6}>
             <h2 className="text-4xl font-bold mb-4 text-red-500">MISSION GESCHEITERT</h2>
-            <p className="text-xl mb-6 text-gray-400">Schade. Wirklich schade.</p>
+            <p className="text-xl mb-6 text-gray-400">Schade. Wirklich schade. Bitte gib mir Bescheid!</p>
+            <p className="text-lg mb-6 text-gray-500 italic">Aber hey, vielleicht beim nächsten Mal... oder so. 😢</p>
             
             {/* Sad farewell image */}
             <div className="mb-6">
@@ -312,7 +344,6 @@ export default function StepperForm({ name }: StepperFormProps) {
               />
             </div>
             
-            <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExaDBscjBjdjVqa2Z1d3J0YzEwZzM2b3JzZ3NqYmJjZ3B6eGNrN2ZqdyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/3oFzm622W766v4jQyY/giphy.gif" alt="Sad" className="mb-8 rounded-lg shadow-lg" />
             <button 
               onClick={() => { setNoCount(0); handleSetStep(1); }} 
               className="bg-gray-600 hover:bg-gray-700 text-white font-bold py-3 px-6 rounded-full shadow-md transform hover:scale-105 transition-transform duration-300"
