@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 
@@ -9,19 +9,24 @@ type StepperFormProps = {
 };
 
 const StepWrapper = ({ children, backgroundImage }: { children: React.ReactNode; backgroundImage?: number }) => {
-    const variants = {
-        enter: { x: '100%', opacity: 0 },
-        center: { x: 0, opacity: 1 },
-        exit: { x: '-100%', opacity: 0 },
+    const containerVariants = {
+        enter: { opacity: 0 },
+        center: { opacity: 1 },
+        exit: { opacity: 0 },
+    };
+
+    const contentVariants = {
+        enter: { opacity: 0, y: 20 },
+        center: { opacity: 1, y: 0 },
     };
 
     return (
         <motion.div
-            variants={variants}
+            variants={containerVariants}
             initial="enter"
             animate="center"
             exit="exit"
-            transition={{ type: 'tween', ease: 'easeInOut', duration: 0.5 }}
+            transition={{ duration: 0.2 }}
             className="absolute w-full h-full flex flex-col justify-end items-center text-center overflow-y-auto"
         >
             {/* Background Image - optimized with Next.js Image */}
@@ -34,7 +39,7 @@ const StepWrapper = ({ children, backgroundImage }: { children: React.ReactNode;
                         priority
                         quality={75}
                         sizes="100vw"
-                        className="object-cover"
+                        className="object-cover object-[center_30%]"
                         placeholder="blur"
                         blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAb/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="
                     />
@@ -50,9 +55,15 @@ const StepWrapper = ({ children, backgroundImage }: { children: React.ReactNode;
             />
             
             {/* Content */}
-            <div className="relative z-20 w-full pb-12 sm:pb-16 pt-32 sm:pt-40 px-4 sm:px-6 md:px-8 flex flex-col items-center">
+            <motion.div 
+                variants={contentVariants}
+                initial="enter"
+                animate="center"
+                transition={{ delay: 0.1, duration: 0.3 }}
+                className="relative z-20 w-full pb-12 sm:pb-16 pt-32 sm:pt-40 px-4 sm:px-6 md:px-8 flex flex-col items-center"
+            >
                 {children}
-            </div>
+            </motion.div>
         </motion.div>
     );
 };
@@ -62,6 +73,22 @@ export default function StepperForm({ name }: StepperFormProps) {
   const [step, setStep] = useState(1);
   const [noCount, setNoCount] = useState(0);
   const [currentImage, setCurrentImage] = useState(1);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  // Initialize audio on mount
+  useEffect(() => {
+    audioRef.current = new Audio('/music/edm.mp3');
+    audioRef.current.loop = true;
+    audioRef.current.volume = 0.3; // Set to 30% volume
+
+    // Cleanup: pause and remove audio when component unmounts
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current = null;
+      }
+    };
+  }, []);
 
   const getRandomImage = () => {
     const randomNum = Math.floor(Math.random() * 7) + 1;
@@ -72,6 +99,13 @@ export default function StepperForm({ name }: StepperFormProps) {
   const handleSetStep = (newStep: number) => {
     getRandomImage();
     setStep(newStep);
+    
+    // Start music when moving from step 1 to step 2
+    if (step === 1 && newStep === 2 && audioRef.current) {
+      audioRef.current.play().catch(err => {
+        console.log('Audio play failed:', err);
+      });
+    }
   };
   
   const handleNo = () => {
@@ -91,7 +125,7 @@ export default function StepperForm({ name }: StepperFormProps) {
           <StepWrapper key={1} backgroundImage={currentImage}>
             <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600 text-center">Achtung, {name}!</h1>
             <p className="text-lg sm:text-xl mb-6 sm:mb-8 text-gray-200 text-center">Du wurdest für eine geheime Mission ausgewählt.</p>
-            <button onClick={() => handleSetStep(2)} className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-bold py-3 px-6 sm:py-3 sm:px-8 rounded-full shadow-lg transform hover:scale-105 transition-transform duration-300 text-base sm:text-lg">
+            <button onClick={() => handleSetStep(2)} className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-bold py-3 px-8 rounded-full shadow-lg transform hover:scale-105 transition-all duration-300 text-base sm:text-lg">
               Starte den vibe check
             </button>
             <p className="text-base sm:text-lg text-gray-300 mt-4 text-center">Bist du bereit?</p>
@@ -103,10 +137,10 @@ export default function StepperForm({ name }: StepperFormProps) {
             <p className="text-lg sm:text-xl mb-8 sm:mb-12 text-gray-200 text-center">Kannst du am 15. November ab 18:00 Uhr?</p>
             
             <div className="flex gap-4 sm:gap-6 justify-center">
-              <button onClick={() => handleSetStep(3)} className="bg-green-500 hover:bg-green-600 text-white font-bold py-2.5 px-6 sm:py-3 sm:px-8 rounded-full shadow-md transform hover:scale-105 transition-transform duration-300 text-base sm:text-lg">
+              <button onClick={() => handleSetStep(3)} className="bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-8 rounded-full shadow-lg transform hover:scale-105 transition-all duration-300 text-base sm:text-lg">
                 JA
               </button>
-              <button onClick={handleNo} className="bg-red-500 hover:bg-red-600 text-white font-bold py-2.5 px-6 sm:py-3 sm:px-8 rounded-full shadow-md transform hover:scale-105 transition-transform duration-300 text-base sm:text-lg">
+              <button onClick={handleNo} className="bg-red-500 hover:bg-red-600 text-white font-bold py-3 px-8 rounded-full shadow-lg transform hover:scale-105 transition-all duration-300 text-base sm:text-lg">
                 NEIN
               </button>
             </div>
@@ -118,13 +152,13 @@ export default function StepperForm({ name }: StepperFormProps) {
             <p className="text-sm sm:text-md mb-6 text-gray-400 italic text-center">(Keine Sorge, wir fahren nicht ins Watz)</p>
             
             <div className="flex flex-col gap-3 sm:gap-4 w-full max-w-xs">
-              <button onClick={() => handleSetStep(4)} className="bg-gray-800/80 backdrop-blur-sm hover:bg-purple-700 border-2 border-transparent hover:border-purple-400 text-white font-bold py-2.5 sm:py-3 px-4 rounded-lg transition-all duration-300 text-sm sm:text-base">
+              <button onClick={() => handleSetStep(4)} className="bg-gray-800/80 backdrop-blur-sm hover:bg-purple-700 border-2 border-transparent hover:border-purple-400 text-white font-bold py-3 px-6 rounded-full shadow-lg transform hover:scale-105 transition-all duration-300 text-sm sm:text-base">
                 Bottle Party
               </button>
-              <button onClick={() => handleSetStep(4)} className="bg-gray-800/80 backdrop-blur-sm hover:bg-pink-700 border-2 border-transparent hover:border-pink-400 text-white font-bold py-2.5 sm:py-3 px-4 rounded-lg transition-all duration-300 text-sm sm:text-base">
+              <button onClick={() => handleSetStep(4)} className="bg-gray-800/80 backdrop-blur-sm hover:bg-pink-700 border-2 border-transparent hover:border-pink-400 text-white font-bold py-3 px-6 rounded-full shadow-lg transform hover:scale-105 transition-all duration-300 text-sm sm:text-base">
                 Irgendwas zum Essen
               </button>
-              <button onClick={() => handleSetStep(4)} className="bg-gray-800/80 backdrop-blur-sm hover:bg-cyan-700 border-2 border-transparent hover:border-cyan-400 text-white font-bold py-2.5 sm:py-3 px-4 rounded-lg transition-all duration-300 text-sm sm:text-base">
+              <button onClick={() => handleSetStep(4)} className="bg-gray-800/80 backdrop-blur-sm hover:bg-cyan-700 border-2 border-transparent hover:border-cyan-400 text-white font-bold py-3 px-6 rounded-full shadow-lg transform hover:scale-105 transition-all duration-300 text-sm sm:text-base">
                 Beides (wähl das Leben)
               </button>
             </div>
@@ -163,7 +197,7 @@ export default function StepperForm({ name }: StepperFormProps) {
             
             <button 
               onClick={() => handleSetStep(5)} 
-              className="bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white font-bold py-2.5 sm:py-3 px-5 sm:px-6 rounded-full shadow-lg transform hover:scale-105 transition-transform duration-300 text-sm sm:text-base"
+              className="bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white font-bold py-3 px-8 rounded-full shadow-lg transform hover:scale-105 transition-all duration-300 text-base sm:text-lg"
             >
               Perfekt, ich bin dabei! ✓
             </button>
@@ -218,13 +252,13 @@ export default function StepperForm({ name }: StepperFormProps) {
             <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 w-full max-w-md">
               <button 
                 onClick={() => { setNoCount(0); handleSetStep(3); }} 
-                className="bg-green-500 hover:bg-green-600 text-white font-bold py-2.5 sm:py-3 px-6 sm:px-8 rounded-full shadow-md transform hover:scale-110 transition-transform duration-300 animate-pulse text-sm sm:text-base"
+                className="bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-8 rounded-full shadow-lg transform hover:scale-110 transition-all duration-300 animate-pulse text-base sm:text-lg"
               >
                 OK, ich komme doch! 😊
               </button>
               <button 
                 onClick={handleNo} 
-                className="bg-red-500 hover:bg-red-600 text-white font-bold py-2.5 sm:py-3 px-6 sm:px-8 rounded-full shadow-md transform hover:scale-105 transition-transform duration-300 text-sm sm:text-base"
+                className="bg-red-500 hover:bg-red-600 text-white font-bold py-3 px-8 rounded-full shadow-lg transform hover:scale-105 transition-all duration-300 text-base sm:text-lg"
               >
                 Ja, sicher
               </button>
@@ -238,23 +272,18 @@ export default function StepperForm({ name }: StepperFormProps) {
             <p className="text-lg sm:text-xl md:text-2xl mb-2 text-gray-200 text-center">Du willst meinen Geburtstag verpassen?</p>
             <p className="text-base sm:text-lg md:text-xl mb-6 text-gray-300 text-center">Das gibt&apos;s nur einmal... 🎂</p>
             
-            <img 
-              src="https://media.giphy.com/media/3oEduOnl5IHM5NRodO/giphy.gif" 
-              alt="Please" 
-              className="mb-6 sm:mb-8 rounded-lg shadow-lg max-w-[200px] sm:max-w-sm mx-auto"
-            />
             <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 w-full max-w-lg">
               <button 
                 onClick={() => { setNoCount(0); handleSetStep(3); }} 
-                className="bg-green-500 hover:bg-green-600 text-white font-bold py-3 sm:py-4 px-6 sm:px-10 rounded-full shadow-lg transform hover:scale-110 transition-transform duration-300 text-base sm:text-lg md:text-xl"
+                className="bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-8 rounded-full shadow-lg transform hover:scale-110 transition-all duration-300 text-base sm:text-lg"
               >
                 Mist, du hast Recht! 💚
               </button>
               <button 
                 onClick={handleNo} 
-                className="bg-red-500 hover:bg-red-600 text-white font-bold py-2.5 sm:py-3 px-6 sm:px-8 rounded-full shadow-md transform hover:scale-105 transition-transform duration-300 text-sm sm:text-base"
+                className="bg-red-500 hover:bg-red-600 text-white font-bold py-3 px-8 rounded-full shadow-lg transform hover:scale-105 transition-all duration-300 text-base sm:text-lg"
               >
-                Kann echt nicht
+                Kann echt nicht, ich geb dir Bescheid
               </button>
             </div>
           </StepWrapper>
@@ -274,13 +303,13 @@ export default function StepperForm({ name }: StepperFormProps) {
             <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 w-full max-w-lg">
               <button 
                 onClick={() => { setNoCount(0); handleSetStep(3); }} 
-                className="bg-gradient-to-r from-green-400 to-emerald-500 hover:from-green-500 hover:to-emerald-600 text-white font-bold py-3 sm:py-4 md:py-5 px-8 sm:px-10 md:px-12 rounded-full shadow-2xl transform hover:scale-110 sm:hover:scale-125 transition-all duration-300 text-base sm:text-xl md:text-2xl animate-bounce"
+                className="bg-gradient-to-r from-green-400 to-emerald-500 hover:from-green-500 hover:to-emerald-600 text-white font-bold py-3 px-10 rounded-full shadow-2xl transform hover:scale-110 transition-all duration-300 text-lg sm:text-xl animate-bounce"
               >
                 OKAY, ICH KOMME! 🎉
               </button>
               <button 
                 onClick={handleNo} 
-                className="bg-gray-700/80 backdrop-blur-sm hover:bg-gray-800 text-gray-400 font-bold py-2.5 sm:py-3 px-5 sm:px-6 rounded-full shadow-md transform hover:scale-105 transition-transform duration-300 text-xs sm:text-sm"
+                className="bg-gray-700/80 backdrop-blur-sm hover:bg-gray-800 text-gray-400 font-bold py-3 px-8 rounded-full shadow-lg transform hover:scale-105 transition-all duration-300 text-base"
               >
                 Kann wirklich nicht...
               </button>
@@ -296,7 +325,7 @@ export default function StepperForm({ name }: StepperFormProps) {
             
             <button 
               onClick={() => { setNoCount(0); handleSetStep(1); }} 
-              className="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2.5 sm:py-3 px-5 sm:px-6 rounded-full shadow-md transform hover:scale-105 transition-transform duration-300 text-sm sm:text-base"
+              className="bg-gray-600 hover:bg-gray-700 text-white font-bold py-3 px-8 rounded-full shadow-lg transform hover:scale-105 transition-all duration-300 text-base sm:text-lg"
             >
               Das war ein Fehler
             </button>
