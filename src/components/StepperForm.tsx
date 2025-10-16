@@ -8,6 +8,18 @@ type StepperFormProps = {
   name: string;
 };
 
+type Confetti = {
+  x: number;
+  y: number;
+  vx: number;
+  vy: number;
+  size: number;
+  color: string;
+  rotation: number;
+  rotationSpeed: number;
+  gravity: number;
+};
+
 const StepWrapper = ({ children, backgroundImage }: { children: React.ReactNode; backgroundImage?: number }) => {
     const containerVariants = {
         enter: { opacity: 0 },
@@ -76,6 +88,7 @@ export default function StepperForm({ name }: StepperFormProps) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const correctSoundRef = useRef<HTMLAudioElement | null>(null);
   const wrongSoundRef = useRef<HTMLAudioElement | null>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
 
   // Initialize audio on mount
   useEffect(() => {
@@ -98,6 +111,79 @@ export default function StepperForm({ name }: StepperFormProps) {
       }
       correctSoundRef.current = null;
       wrongSoundRef.current = null;
+    };
+  }, []);
+
+  // Confetti animation
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    const resizeCanvas = () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    };
+
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+
+    const confetti: Confetti[] = [];
+
+    // Create fewer, more subtle confetti pieces
+    for (let i = 0; i < 50; i++) {
+      confetti.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height - canvas.height,
+        vx: (Math.random() - 0.5) * 1.5,
+        vy: Math.random() * 1 + 0.5,
+        size: Math.random() * 6 + 3,
+        color: `hsl(${Math.random() * 360}, 70%, 60%)`,
+        rotation: Math.random() * Math.PI * 2,
+        rotationSpeed: (Math.random() - 0.5) * 0.1,
+        gravity: 0.05,
+      });
+    }
+
+    let animationId: number;
+
+    const animate = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      confetti.forEach((c) => {
+        c.vy += c.gravity;
+        c.x += c.vx;
+        c.y += c.vy;
+        c.rotation += c.rotationSpeed;
+
+        if (c.y > canvas.height + 50) {
+          c.y = -50;
+          c.x = Math.random() * canvas.width;
+          c.vy = Math.random() * 1 + 0.5;
+        }
+        if (c.x < -50 || c.x > canvas.width + 50) {
+          c.vx *= -1;
+        }
+
+        ctx.save();
+        ctx.translate(c.x, c.y);
+        ctx.rotate(c.rotation);
+        ctx.fillStyle = c.color;
+        ctx.globalAlpha = 0.4; // More subtle transparency
+        ctx.fillRect(-c.size / 2, -c.size / 2, c.size, c.size / 3);
+        ctx.restore();
+      });
+
+      animationId = requestAnimationFrame(animate);
+    };
+
+    animate();
+
+    return () => {
+      cancelAnimationFrame(animationId);
+      window.removeEventListener('resize', resizeCanvas);
     };
   }, []);
 
@@ -153,6 +239,12 @@ export default function StepperForm({ name }: StepperFormProps) {
 
   return (
     <div className="relative h-screen flex items-center justify-center overflow-hidden">
+      {/* Confetti Canvas - between background and content */}
+      <canvas 
+        ref={canvasRef}
+        className="absolute inset-0 pointer-events-none"
+        style={{ zIndex: 15 }}
+      />
       <AnimatePresence mode="wait">
         {step === 1 && (
           <StepWrapper key={1} backgroundImage={currentImage}>
