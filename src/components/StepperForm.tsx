@@ -204,7 +204,7 @@ export default function StepperForm({ name }: StepperFormProps) {
   };
 
   const getRandomImage = () => {
-    const randomNum = Math.floor(Math.random() * 7) + 1;
+    const randomNum = Math.floor(Math.random() * 5) + 1;
     setCurrentImage(randomNum);
     return randomNum;
   };

@@ -22,7 +22,7 @@ export async function generateMetadata({ params }: EinladungPageProps): Promise<
     .join(' ');
 
   // Pick a random image (1-7)
-  const randomImage = Math.floor(Math.random() * 7) + 1;
+  const randomImage = Math.floor(Math.random() * 5) + 1;
   const imageUrl = `/images/${randomImage}.jpg`;
 
   const title = `${formattedName}, du bist eingeladen! 🎉`;
