@@ -1,21 +1,22 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getQuestionById } from '@/lib/questions';
-import { addSolvedStation } from '@/lib/progressStorage';
+import { addSolvedTask, getCooldownForTask, setCooldownForTask, clearCooldownForTask } from '@/lib/progressStorage';
+import { generateTaskCode } from '@/lib/tokenUtils';
 
-// Simple in-memory storage for cooldowns (in production, use Redis or similar)
-const cooldowns = new Map<string, number>();
+// Cooldown configuration (seconds) — can be set via env var QUESTION_COOLDOWN_SECONDS
+const COOLDOWN_SECONDS = Math.max(0, parseInt(process.env.QUESTION_COOLDOWN_SECONDS ?? '30', 10));
 
 export async function POST(request: NextRequest) {
   try {
-    const { stationId, answerIndex, clientCode } = await request.json();
+    const { taskId, answerIndex } = await request.json();
 
-    if (typeof stationId !== 'number' || typeof answerIndex !== 'number') {
+    if (typeof taskId !== 'number' || typeof answerIndex !== 'number') {
       return NextResponse.json({ error: 'Invalid input' }, { status: 400 });
     }
 
-    const question = getQuestionById(stationId);
+    const question = getQuestionById(taskId);
     if (!question) {
-      return NextResponse.json({ error: 'Station not found' }, { status: 404 });
+      return NextResponse.json({ error: 'Task not found' }, { status: 404 });
     }
 
     // Check time lock if present
@@ -30,29 +31,23 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Check cooldown
-    const cooldownKey = `station-${stationId}`;
-    const lastAttempt = cooldowns.get(cooldownKey);
+    // Check cooldown (persistent per-task)
     const now = Date.now();
-    const cooldownDuration = 30 * 1000; // 30 seconds
-
-    if (lastAttempt && now - lastAttempt < cooldownDuration) {
-      const remaining = Math.ceil((cooldownDuration - (now - lastAttempt)) / 1000);
-      return NextResponse.json({
-        correct: false,
-        cooldown: remaining
-      });
+    const cooldownUntil = getCooldownForTask(taskId);
+    if (cooldownUntil && now < cooldownUntil) {
+      const remaining = Math.ceil((cooldownUntil - now) / 1000);
+      return NextResponse.json({ correct: false, cooldown: remaining });
     }
 
     // Validate answer
-    const isCorrect = answerIndex === question.correctAnswerIndex;
+  const isCorrect = answerIndex === question.correctAnswerIndex;
 
     if (isCorrect) {
       // Clear cooldown on correct answer
-      cooldowns.delete(cooldownKey);
+      clearCooldownForTask(taskId);
 
-      // Track solved station
-      addSolvedStation(stationId);
+      // Track solved task
+      addSolvedTask(taskId);
 
       if (question.finalRevealText) {
         return NextResponse.json({
@@ -60,19 +55,21 @@ export async function POST(request: NextRequest) {
           finalRevealText: question.finalRevealText
         });
       } else {
+        // prefer explicit nextTaskCode/location from the question data
+        const nextId = taskId + 1;
+        const nextCode = question.nextTaskCode ?? generateTaskCode(nextId);
+        const nextLocation = question.nextTaskLocation ?? null;
         return NextResponse.json({
           correct: true,
-          nextCode: question.nextStationCode
+          nextTaskLocation: nextLocation,
+          nextTaskCode: nextCode
         });
       }
     } else {
-      // Set cooldown on wrong answer
-      cooldowns.set(cooldownKey, now);
-
-      return NextResponse.json({
-        correct: false,
-        cooldown: 30
-      });
+      // Set cooldown on wrong answer (persisted)
+      const until = now + COOLDOWN_SECONDS * 1000;
+      setCooldownForTask(taskId, until);
+      return NextResponse.json({ correct: false, cooldown: COOLDOWN_SECONDS });
     }
 
   } catch (error) {

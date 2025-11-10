@@ -1,16 +1,16 @@
 import { NextResponse } from 'next/server';
-import { questions, getTotalStations } from '@/lib/questions';
-import { getSolvedStations } from '@/lib/progressStorage';
+import { questions, getTotalTasks } from '@/lib/questions';
+import { getSolvedTasks } from '@/lib/progressStorage';
 
 export async function GET() {
   try {
     const now = new Date();
-    const solvedStations = getSolvedStations();
+    const solvedTasks = getSolvedTasks();
     const progress = {
-      totalStations: getTotalStations(),
-      solvedStations: Array.from(solvedStations),
-      stations: questions.map(q => {
-        const isSolved = solvedStations.has(q.id);
+      totalTasks: getTotalTasks(),
+      solvedTasks: Array.from(solvedTasks),
+      tasks: questions.map(q => {
+        const isSolved = solvedTasks.has(q.id);
         let timeUntilUnlock: number | null = null;
         let isLocked = false;
 

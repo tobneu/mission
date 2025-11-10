@@ -3,15 +3,15 @@ import { getQuestionById } from '@/lib/questions';
 
 export async function POST(request: NextRequest) {
   try {
-    const { stationId } = await request.json();
+    const { taskId } = await request.json();
 
-    if (typeof stationId !== 'number') {
-      return NextResponse.json({ error: 'Invalid stationId' }, { status: 400 });
+    if (typeof taskId !== 'number') {
+      return NextResponse.json({ error: 'Invalid taskId' }, { status: 400 });
     }
 
-    const question = getQuestionById(stationId);
+    const question = getQuestionById(taskId);
     if (!question) {
-      return NextResponse.json({ error: 'Station not found' }, { status: 404 });
+      return NextResponse.json({ error: 'Task not found' }, { status: 404 });
     }
 
     if (!question.timeLock) {

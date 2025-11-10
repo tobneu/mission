@@ -11,7 +11,11 @@
   "dependencies": {
     "autoprefixer": "^10.4.21",
     "framer-motion": "^12.23.24",
+    "html2canvas": "^1.4.1",
+    "jspdf": "^3.0.3",
     "next": "15.5.5",
+    "pdfkit": "^0.17.2",
+    "qrcode": "^1.5.4",
     "react": "19.1.0",
     "react-dom": "19.1.0"
   },
@@ -19,7 +23,10 @@
     "@eslint/eslintrc": "^3",
     "@tailwindcss/aspect-ratio": "^0.4.2",
     "@tailwindcss/postcss": "^4.1.14",
+    "@types/jspdf": "^2.0.0",
     "@types/node": "^20",
+    "@types/pdfkit": "^0.17.3",
+    "@types/qrcode": "^1.5.6",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
