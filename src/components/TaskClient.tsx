@@ -4,15 +4,13 @@ import { useState, useEffect } from 'react';
 import { getQuestionById, Question } from '@/lib/questions';
 import { generateTaskCode } from '@/lib/tokenUtils';
 
-  // --- cookie helpers (small and local to this component) ---
-  function setCookie(name: string, value: string, days = 7) {
-    const expires = new Date(Date.now() + days * 864e5).toUTCString();
-    document.cookie = name + '=' + encodeURIComponent(value) + '; expires=' + expires + '; path=/';
+  // --- storage helpers (small and local to this component) ---
+  function setStorage(name: string, value: string) {
+    localStorage.setItem(name, value);
   }
 
-  function getCookie(name: string) {
-    const v = document.cookie.match('(?:^|; )' + name.replace(/([.*+?^${}()|[\]\\])/g, '\\$1') + '=([^;]*)');
-    return v ? decodeURIComponent(v[1]) : null;
+  function getStorage(name: string) {
+    return localStorage.getItem(name);
   }
 
 interface Result {
@@ -38,7 +36,7 @@ export default function TaskClient({ taskId }: { taskId: number }) {
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [result, setResult] = useState<Result | null>(null);
-  // no clipboard state needed anymore; we store codes as cookies
+  // no clipboard state needed anymore; we store codes in storage
   const [cooldown, setCooldown] = useState(0);
   const [timeCheck, setTimeCheck] = useState<TimeCheck | null>(null);
   const [showIntroModal, setShowIntroModal] = useState(false);
@@ -55,8 +53,8 @@ export default function TaskClient({ taskId }: { taskId: number }) {
         setQuestion(questionData ?? null);
       }
     } else {
-      // check cookie for the code for this task
-      const prevCode = getCookie(`scavengerCode-${taskId}`);
+      // check storage for the code for this task
+      const prevCode = getStorage(`scavengerCode-${taskId}`);
       // Determine the expected previous-code: prefer an explicit nextTaskCode on the previous question,
       // otherwise fall back to the deterministic generated code for this taskId.
       const prevQuestion = getQuestionById(taskId - 1);
@@ -147,8 +145,8 @@ export default function TaskClient({ taskId }: { taskId: number }) {
 
       if (data.correct) {
         if (data.nextTaskCode) {
-          // persist the secret key for the next task as a cookie named scavengerCode-<nextTaskId>
-          setCookie(`scavengerCode-${taskId + 1}`, data.nextTaskCode as string, 7);
+          // persist the secret key for the next task as storage named scavengerCode-<nextTaskId>
+          setStorage(`scavengerCode-${taskId + 1}`, data.nextTaskCode as string);
         }
       } else if (data.cooldown) {
         setCooldown(data.cooldown);
