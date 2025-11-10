@@ -204,7 +204,7 @@ export default function TaskClient({ taskId }: { taskId: number }) {
             onClick={handleCloseIntroModal}
             className="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-6 rounded-lg transition-colors"
           >
-            Los geht's! 🚀
+            Los geht&apos;s! 🚀
           </button>
         </div>
       </div>
