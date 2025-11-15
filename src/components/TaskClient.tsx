@@ -188,11 +188,11 @@ export default function TaskClient({ taskId }: { taskId: number }) {
               <strong>🔓 Wie es funktioniert:</strong>
             </p>
             <ul className="list-disc list-inside space-y-1 text-sm">
-              <li>Jede Task hat eine Frage mit 4 Antworten</li>
-              <li>Richtige Antwort gibt dir einen Code für die nächste Task</li>
-              <li>Falsche Antwort = 30 Sekunden warten</li>
+              <li>Jeder Task hat eine Frage mit 4 Antworten</li>
+              <li>Richtige Antwort gibt dir einen Hinweis des nächsten Tasks</li>
+              <li>Falsche Antwort = Strafzeit</li>
               <li>Einige Tasks sind zeitgesperrt</li>
-              <li>Der Fortschritt wird automatisch gespeichert</li>
+              <li>Dein Fortschritt wird hoffentlich automatisch gespeichert</li>
             </ul>
             <p className="text-yellow-400 font-semibold">
               Viel Spaß und viel Erfolg! 🍀
